@@ -11,6 +11,7 @@ const IndexPage = () => {
   const { useRef, useEffect, useState } = React
   const mount = useRef(null)
   const [isAnimating, setAnimating] = useState(true)
+  const [viewObj, setViewObj] = useState(0.1, 0.1)
   const controls = useRef(null)
 
   useEffect(() => {
@@ -47,10 +48,51 @@ const IndexPage = () => {
       camera.updateProjectionMatrix()
       renderScene()
     }
+    const handleKeyPress = e => {
+      /*
+        39 = arrow right
+        37 = arrow left
+        38 = arrow up
+        40 = arrow down
+      */
+      console.log("e", e.keyCode)
+
+      switch (e.keyCode) {
+        case 39:
+        case 68:
+          cube.rotation.y += 0.25
+          break
+        case 37:
+        case 65:
+          cube.rotation.y += -0.25
+          break
+        case 40:
+        case 83:
+          cube.rotation.x += 0.25
+          break
+        case 38:
+        case 87:
+          cube.rotation.x += -0.25
+          break
+        default:
+          console.log("please press an arrow btn")
+      }
+      // cube.rotation.x = e.clientY / window.innerWidth
+      // cube.rotation.y = e.clientX / window.innerHeight
+      // width = mount.current.clientWidth
+      // height = mount.current.clientHeight
+      // renderer.setSize(width, height)
+      // camera.aspect = width / height
+      // camera.updateProjectionMatrix()
+      renderScene()
+      frameId = window.requestAnimationFrame(animate)
+    }
 
     const animate = () => {
-      cube.rotation.x += 0.01
-      cube.rotation.y += 0.01
+      // cube.rotation.x += 0.01
+      // cube.rotation.y += 0.01
+      // cube.rotation.x = 0.01
+      // cube.rotation.y = 0.01
 
       renderScene()
       frameId = window.requestAnimationFrame(animate)
@@ -69,6 +111,7 @@ const IndexPage = () => {
 
     mount.current.appendChild(renderer.domElement)
     window.addEventListener("resize", handleResize)
+    window.addEventListener("keydown", handleKeyPress)
     start()
 
     controls.current = { start, stop }
@@ -76,6 +119,7 @@ const IndexPage = () => {
     return () => {
       stop()
       window.removeEventListener("resize", handleResize)
+      window.removeEventListener("keydown", handleKeyPress)
       mount.current.removeChild(renderer.domElement)
 
       scene.remove(cube)
